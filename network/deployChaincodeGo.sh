@@ -33,11 +33,11 @@ setGlobalsForPeer0Org2() {
 
 
 presetup() {
-    echo Vendoring Go dependencies ...
+    echo " ===================== Vendoring Go dependencies ===================== "
     pushd ./chaincode/go
     GO111MODULE=on go mod vendor
     popd
-    echo Finished vendoring Go dependencies
+    echo " ===================== Finished vendoring Go dependencies ====================="
 }
 # presetup
 

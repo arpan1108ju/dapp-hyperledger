@@ -33,19 +33,22 @@ setGlobalsForPeer0Org2() {
 
 
 presetup() {
-    echo Installing node dependencies ...
+    echo ==================== Installing node dependencies ===============
     pushd ./chaincode/javascript
-    cd src && npm ci '--only=production'
+    rm npm-shrinkwrap.json
+    rm package-lock.json
+    rm -rf node-modules/    
+    npm i --only=production
     popd
-    echo Finished installing node dependencies
+    echo ==================== Finished installing node dependencies ======
 }
 # presetup
 
 export CHANNEL_NAME="mychannel"
 export CC_RUNTIME_LANGUAGE="node"
 export VERSION="1"
-export CC_SRC_PATH=${PWD}/chaincode/javascript
-export CC_NAME="assetTransfer"
+export CC_SRC_PATH="./chaincode/javascript"
+export CC_NAME="assetTransferJS"
 
 packageChaincode() {
     setGlobalsForPeer0Org1
@@ -65,9 +68,9 @@ installChaincode() {
     echo "===================== Chaincode is installed on peer0.org1 ===================== "
 
   
-    setGlobalsForPeer0Org2
-    peer lifecycle chaincode install ./chaincode-package/${CC_NAME}.tar.gz
-    echo "===================== Chaincode is installed on peer0.org2 ===================== "
+    # setGlobalsForPeer0Org2
+    # peer lifecycle chaincode install ./chaincode-package/${CC_NAME}.tar.gz
+    # echo "===================== Chaincode is installed on peer0.org2 ===================== "
 
 }
 
@@ -260,8 +263,8 @@ chaincodeQuery() {
 # Run this function if you add any new dependency in chaincode
 # presetup
 
-# packageChaincode
-# installChaincode
+packageChaincode
+installChaincode
 # queryInstalledForOrg1
 # queryInstalledForOrg2
 # approveForMyOrg1
@@ -271,6 +274,6 @@ chaincodeQuery() {
 # commitChaincodeDefination
 # queryCommitted
 
-chaincodeInvokeInit
+# chaincodeInvokeInit
 # chaincodeInvoke
 # chaincodeQuery
