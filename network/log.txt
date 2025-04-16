@@ -1,2 +1,2 @@
 Installed chaincodes on peer:
-Package ID: assetTransferGO_1:70a6270388c356f47794d9651ac48f6b77ef08a104fee7692a852ed16331ce48, Label: assetTransferGO_1
+Package ID: crowdfundingGO_1:2993b46708358cfdac3ae5d12539bfeb2a75db346d15fc5c10871093fc708770, Label: crowdfundingGO_1
