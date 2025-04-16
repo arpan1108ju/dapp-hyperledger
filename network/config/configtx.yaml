@@ -66,6 +66,8 @@ Capabilities:
 
 Application: &ApplicationDefaults
     Organizations:
+        - *Org1
+        - *Org2
     Policies:
         Readers:
             Type: ImplicitMeta

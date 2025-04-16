@@ -85,11 +85,13 @@ removeChannel(){
 }
 
 
-checkChannelForOrg2(){
+checkChannel(){
     setGlobalsForPeer0Org2
-    peer channel getinfo -c $CHANNEL_NAME
+    # peer channel getinfo -c $CHANNEL_NAME
+
+    peer channel list
 }
-# checkChannelForOrg2
+# checkChannel
 
 # removeOldCrypto
 
