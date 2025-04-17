@@ -1,0 +1,1 @@
+mkdir crypto-config chaincode-package channel-artifacts
