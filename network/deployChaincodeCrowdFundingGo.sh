@@ -340,7 +340,7 @@ GetAllCampaigns() {
 
 # sleep 2
 
-ReadCampaign 
-sleep 2
-GetAllCampaigns 
+# ReadCampaign 
+# sleep 2
+# GetAllCampaigns 
 

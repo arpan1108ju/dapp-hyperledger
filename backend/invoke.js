@@ -5,7 +5,7 @@ import fs from 'fs';
 import { CONNECTION_PROFILE_PATH, WALLET_PATH } from './paths.js';
 import { CAMPAIGN_CATEGORY, CAMPAIGN_CREATED_AT, CAMPAIGN_DEADLINE, CAMPAIGN_DESC, CAMPAIGN_GOAL, CAMPAIGN_ID, CAMPAIGN_IMAGE, CAMPAIGN_TITLE, CHANNEL_NAME, CONTRACT_NAME, CREATE_CAMPAIGN } from './dummy_data.js';
 
-async function getContract () {
+const main = async () => {
 
     let gateway;
 
@@ -41,11 +41,8 @@ async function getContract () {
         console.log('contract : ',contract);
 
         // Change this to the actual function and args you want to invoke
-        // const result = await contract.submitTransaction(CREATE_CAMPAIGN,CAMPAIGN_ID,CAMPAIGN_TITLE,CAMPAIGN_DESC,CAMPAIGN_CATEGORY,CAMPAIGN_GOAL,CAMPAIGN_DEADLINE,CAMPAIGN_IMAGE,CAMPAIGN_CREATED_AT);
-        // console.log(`✅ Transaction has been submitted: ${result.toString()}`);
-
-        return { gateway, contract };
-
+        const result = await contract.submitTransaction(CREATE_CAMPAIGN,CAMPAIGN_ID,CAMPAIGN_TITLE,CAMPAIGN_DESC,CAMPAIGN_CATEGORY,CAMPAIGN_GOAL,CAMPAIGN_DEADLINE,CAMPAIGN_IMAGE,CAMPAIGN_CREATED_AT);
+        console.log(`✅ Transaction has been submitted: ${result.toString()}`);
 
     } catch (error) {
         console.error(`❌ Failed to submit transaction: ${error}`);
@@ -58,7 +55,7 @@ async function getContract () {
             console.log('disconnected');
         }
     }
-}
+};
 
+main();
 
-module.exports = { getContract };

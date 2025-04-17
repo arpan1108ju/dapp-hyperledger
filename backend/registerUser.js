@@ -1,14 +1,18 @@
-// backend/registerUser.js
+import FabricCAServices from 'fabric-ca-client';
+import { Wallets } from 'fabric-network';
+import path from 'path';
+import fs from 'fs';
+import { fileURLToPath } from 'url';
+import { CONNECTION_PROFILE_PATH } from './paths.js';
 
-const FabricCAServices = require('fabric-ca-client');
-const { Wallets } = require('fabric-network');
-const path = require('path');
-const fs = require('fs');
+// Get __dirname equivalent in ES modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 
 async function registerUser() {
     try {
-        const ccpPath = path.resolve(__dirname, 'connection-org1.json');
-        const ccp = JSON.parse(fs.readFileSync(ccpPath, 'utf8'));
+        const ccp = JSON.parse(fs.readFileSync(CONNECTION_PROFILE_PATH, 'utf8'));
 
         const caURL = ccp.certificateAuthorities['ca.org1.example.com'].url;
         const ca = new FabricCAServices(caURL);
@@ -24,7 +28,7 @@ async function registerUser() {
 
         const adminIdentity = await wallet.get('admin');
         if (!adminIdentity) {
-            console.log('Admin identity not found');
+            console.log('Admin identity not found in wallet');
             return;
         }
 
@@ -54,7 +58,7 @@ async function registerUser() {
         await wallet.put('appUser', x509Identity);
         console.log('✅ Successfully registered and enrolled appUser');
     } catch (error) {
-        console.error(`❌ Error: ${error}`);
+        console.error(`❌ Error registering user: ${error}`);
     }
 }
 
