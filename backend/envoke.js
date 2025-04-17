@@ -11,7 +11,7 @@ async function main() {
         const walletPath = path.join(__dirname, 'wallet');
         const wallet = await Wallets.newFileSystemWallet(walletPath);
 
-        const identity = await wallet.get('admin');
+        const identity = await wallet.get('appUser');
         if (!identity) {
             console.log('❌ Admin identity not found in wallet');
             return;
@@ -20,12 +20,12 @@ async function main() {
         const gateway = new Gateway();
         await gateway.connect(ccp, {
             wallet,
-            identity: 'admin',
+            identity: 'appUser',
             discovery: { enabled: true, asLocalhost: true },
         });
 
         const network = await gateway.getNetwork('mychannel');
-        const contract = network.getContract('assetTransfer');
+        const contract = network.getContract('fabcar');
 
         // Change this to the actual function and args you want to invoke
         const result = await contract.submitTransaction('CreateAsset', 'asset7', 'purple', '20', 'Alice', '999');
