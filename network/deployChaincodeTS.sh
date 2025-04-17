@@ -33,22 +33,19 @@ setGlobalsForPeer0Org2() {
 
 
 presetup() {
-    echo ==================== Installing node dependencies ===============
-    pushd ./chaincode/javascript
-    rm npm-shrinkwrap.json
-    rm package-lock.json
-    rm -rf node-modules/    
-    npm i --only=production
+    echo "===================== Building Ts code ===================== "
+    pushd ./chaincode/typescript
+    npm run build
     popd
-    echo ==================== Finished installing node dependencies ======
+    echo "===================== Finished Building Ts code ============ "
 }
 # presetup
 
 export CHANNEL_NAME="mychannel"
 export CC_RUNTIME_LANGUAGE="node"
 export VERSION="1"
-export CC_SRC_PATH="./chaincode/javascript"
-export CC_NAME="assetTransferJS"
+export CC_SRC_PATH=${PWD}/chaincode/typescript
+export CC_NAME="assetTransferTS"
 
 packageChaincode() {
     setGlobalsForPeer0Org1
@@ -68,9 +65,9 @@ installChaincode() {
     echo "===================== Chaincode is installed on peer0.org1 ===================== "
 
   
-    # setGlobalsForPeer0Org2
-    # peer lifecycle chaincode install ./chaincode-package/${CC_NAME}.tar.gz
-    # echo "===================== Chaincode is installed on peer0.org2 ===================== "
+    setGlobalsForPeer0Org2
+    peer lifecycle chaincode install ./chaincode-package/${CC_NAME}.tar.gz
+    echo "===================== Chaincode is installed on peer0.org2 ===================== "
 
 }
 
@@ -261,7 +258,7 @@ chaincodeQuery() {
 # chaincodeQuery
 
 # Run this function if you add any new dependency in chaincode
-# presetup
+presetup
 
 packageChaincode
 installChaincode

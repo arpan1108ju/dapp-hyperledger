@@ -33,22 +33,19 @@ setGlobalsForPeer0Org2() {
 
 
 presetup() {
-    echo ==================== Installing node dependencies ===============
-    pushd ./chaincode/javascript
-    rm npm-shrinkwrap.json
-    rm package-lock.json
-    rm -rf node-modules/    
-    npm i --only=production
+    echo "==================== Vendoring go dependencies ==============="
+    pushd ./chaincode/go-asset
+    GO111MODULE=on go mod vendor
     popd
-    echo ==================== Finished installing node dependencies ======
+    echo "==================== Finished vendoring go dependencies =============="
 }
 # presetup
 
 export CHANNEL_NAME="mychannel"
-export CC_RUNTIME_LANGUAGE="node"
+export CC_RUNTIME_LANGUAGE="golang"
 export VERSION="1"
-export CC_SRC_PATH="./chaincode/javascript"
-export CC_NAME="assetTransferJS"
+export CC_SRC_PATH=${PWD}/chaincode/go-asset
+export CC_NAME="assetTransferGO"
 
 packageChaincode() {
     setGlobalsForPeer0Org1
@@ -68,9 +65,9 @@ installChaincode() {
     echo "===================== Chaincode is installed on peer0.org1 ===================== "
 
   
-    # setGlobalsForPeer0Org2
-    # peer lifecycle chaincode install ./chaincode-package/${CC_NAME}.tar.gz
-    # echo "===================== Chaincode is installed on peer0.org2 ===================== "
+    setGlobalsForPeer0Org2
+    peer lifecycle chaincode install ./chaincode-package/${CC_NAME}.tar.gz
+    echo "===================== Chaincode is installed on peer0.org2 ===================== "
 
 }
 
@@ -209,7 +206,7 @@ chaincodeInvokeInit() {
         -C $CHANNEL_NAME -n ${CC_NAME} \
         --peerAddresses localhost:7051 --tlsRootCertFiles $PEER0_ORG1_CA \
         --peerAddresses localhost:9051 --tlsRootCertFiles $PEER0_ORG2_CA \
-        --isInit -c '{"function": "Init","Args":[]}'
+        --isInit -c '{"function": "InitLedger","Args":[]}'
 }
 
 
@@ -217,15 +214,15 @@ chaincodeInvokeInit() {
 chaincodeInvoke() {
     setGlobalsForPeer0Org1
 
-    # Initialize Ledger (this is correct)
-    peer chaincode invoke -o localhost:7050 \
-        --ordererTLSHostnameOverride orderer.example.com \
-        --tls $CORE_PEER_TLS_ENABLED \
-        --cafile $ORDERER_CA \
-        -C $CHANNEL_NAME -n ${CC_NAME} \
-        --peerAddresses localhost:7051 --tlsRootCertFiles $PEER0_ORG1_CA \
-        --peerAddresses localhost:9051 --tlsRootCertFiles $PEER0_ORG2_CA \
-        -c '{"function": "InitLedger", "Args": []}'
+    # # Initialize Ledger (this is correct)
+    # peer chaincode invoke -o localhost:7050 \
+    #     --ordererTLSHostnameOverride orderer.example.com \
+    #     --tls $CORE_PEER_TLS_ENABLED \
+    #     --cafile $ORDERER_CA \
+    #     -C $CHANNEL_NAME -n ${CC_NAME} \
+    #     --peerAddresses localhost:7051 --tlsRootCertFiles $PEER0_ORG1_CA \
+    #     --peerAddresses localhost:9051 --tlsRootCertFiles $PEER0_ORG2_CA \
+    #     -c '{"function": "InitLedger", "Args": []}'
 
    
     # Invoke the CreateAsset function with the correct arguments
@@ -250,7 +247,13 @@ chaincodeQuery() {
     # peer chaincode query -C $CHANNEL_NAME -n ${CC_NAME} -c '{"Args":["queryAllCars"]}'
 
     # Query Car by Id
-    peer chaincode query -C $CHANNEL_NAME -n ${CC_NAME} -c '{"function": "ReadAsset","Args":["1111"]}'
+    echo "=================== read asset ============="
+    peer chaincode query -C $CHANNEL_NAME -n ${CC_NAME} -c '{"function": "ReadAsset","Args":["1111"]}'   
+
+
+    echo "================== get all assets ==========" 
+    peer chaincode query -C $CHANNEL_NAME -n ${CC_NAME} -c '{"function": "GetAllAssets","Args":[]}'    
+
     #'{"Args":["GetSampleData","Key1"]}'
 
     # Query Private Car by Id
@@ -263,8 +266,8 @@ chaincodeQuery() {
 # Run this function if you add any new dependency in chaincode
 # presetup
 
-packageChaincode
-installChaincode
+# packageChaincode
+# installChaincode
 # queryInstalledForOrg1
 # queryInstalledForOrg2
 # approveForMyOrg1
@@ -275,5 +278,5 @@ installChaincode
 # queryCommitted
 
 # chaincodeInvokeInit
-# chaincodeInvoke
-# chaincodeQuery
+chaincodeInvoke
+chaincodeQuery
