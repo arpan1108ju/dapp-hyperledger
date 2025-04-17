@@ -211,15 +211,32 @@ chaincodeInvokeInit() {
         --peerAddresses localhost:9051 --tlsRootCertFiles $PEER0_ORG2_CA \
         --isInit -c '{"function": "InitLedger","Args":[]}'
 }
+#!/bin/bash
 
-CAMPAIGN_ID=camp1234
+# ======================== Variables ============================
+CAMPAIGN_ID="camp1234"
+CAMPAIGN_TITLE="Save the Planet"
+CAMPAIGN_DESC="Campaign to plant trees"
+CAMPAIGN_CATEGORY="Environment"
+CAMPAIGN_GOAL="10000"
+CAMPAIGN_IMAGE="https://image.url"
+
+CAMPAIGN_CREATED_AT="1000000000"
+CAMPAIGN_DEADLINE="2000000000"
+
+DONATION_AMOUNT="500"
+DONATION_TIMESTAMP="1000000010"
+
+WITHDRAW_TIMESTAMP="2000100000"
+CANCEL_TIMESTAMP=  "1000100000"
+
+# ======================== Functions ============================
 
 CreateCampaign() {
     echo "================= create campaign ============================"
 
     setGlobalsForPeer0Org1
 
-    # Create a new campaign
     peer chaincode invoke -o localhost:7050 \
         --ordererTLSHostnameOverride orderer.example.com \
         --tls $CORE_PEER_TLS_ENABLED \
@@ -227,7 +244,7 @@ CreateCampaign() {
         -C $CHANNEL_NAME -n ${CC_NAME} \
         --peerAddresses localhost:7051 --tlsRootCertFiles $PEER0_ORG1_CA \
         --peerAddresses localhost:9051 --tlsRootCertFiles $PEER0_ORG2_CA \
-        -c '{"function": "CreateCampaign", "Args":["'$CAMPAIGN_ID'", "Save the Planet", "Campaign to plant trees", "Environment", "10000", "2000000000", "https://image.url"]}'
+        -c '{"function": "CreateCampaign", "Args":["'"$CAMPAIGN_ID"'", "'"$CAMPAIGN_TITLE"'", "'"$CAMPAIGN_DESC"'", "'"$CAMPAIGN_CATEGORY"'", "'"$CAMPAIGN_GOAL"'", "'"$CAMPAIGN_DEADLINE"'", "'"$CAMPAIGN_IMAGE"'", "'"$CAMPAIGN_CREATED_AT"'"]}'
 }
 
 DonateToCampaign() {
@@ -235,7 +252,6 @@ DonateToCampaign() {
 
     setGlobalsForPeer0Org2
 
-    # Donate to campaign
     peer chaincode invoke -o localhost:7050 \
         --ordererTLSHostnameOverride orderer.example.com \
         --tls $CORE_PEER_TLS_ENABLED \
@@ -243,7 +259,7 @@ DonateToCampaign() {
         -C $CHANNEL_NAME -n ${CC_NAME} \
         --peerAddresses localhost:7051 --tlsRootCertFiles $PEER0_ORG1_CA \
         --peerAddresses localhost:9051 --tlsRootCertFiles $PEER0_ORG2_CA \
-        -c '{"function": "DonateToCampaign", "Args":["'$CAMPAIGN_ID'", "500","10000000"]}'
+        -c '{"function": "DonateToCampaign", "Args":["'"$CAMPAIGN_ID"'", "'"$DONATION_AMOUNT"'", "'"$DONATION_TIMESTAMP"'"]}'
 }
 
 Withdraw() {
@@ -251,7 +267,6 @@ Withdraw() {
 
     setGlobalsForPeer0Org1
 
-    # Withdraw campaign funds
     peer chaincode invoke -o localhost:7050 \
         --ordererTLSHostnameOverride orderer.example.com \
         --tls $CORE_PEER_TLS_ENABLED \
@@ -259,7 +274,7 @@ Withdraw() {
         -C $CHANNEL_NAME -n ${CC_NAME} \
         --peerAddresses localhost:7051 --tlsRootCertFiles $PEER0_ORG1_CA \
         --peerAddresses localhost:9051 --tlsRootCertFiles $PEER0_ORG2_CA \
-        -c '{"function": "Withdraw", "Args":["'$CAMPAIGN_ID'"]}'
+        -c '{"function": "Withdraw", "Args":["'"$CAMPAIGN_ID"'","'"$WITHDRAW_TIMESTAMP"'"]}'
 }
 
 CancelCampaign() {
@@ -267,7 +282,6 @@ CancelCampaign() {
 
     setGlobalsForPeer0Org1
 
-    # Cancel campaign
     peer chaincode invoke -o localhost:7050 \
         --ordererTLSHostnameOverride orderer.example.com \
         --tls $CORE_PEER_TLS_ENABLED \
@@ -275,55 +289,58 @@ CancelCampaign() {
         -C $CHANNEL_NAME -n ${CC_NAME} \
         --peerAddresses localhost:7051 --tlsRootCertFiles $PEER0_ORG1_CA \
         --peerAddresses localhost:9051 --tlsRootCertFiles $PEER0_ORG2_CA \
-        -c '{"function": "CancelCampaign", "Args":["'$CAMPAIGN_ID'"]}'
+        -c '{"function": "CancelCampaign", "Args":["'"$CAMPAIGN_ID"'","'"$CANCEL_TIMESTAMP"'"]}'
 }
 
 ReadCampaign() {
     echo "============= Read a specific campaign ============="
-    
+
     setGlobalsForPeer0Org2
 
     peer chaincode query -C $CHANNEL_NAME -n ${CC_NAME} \
-        -c '{"function": "ReadCampaign", "Args":["'$CAMPAIGN_ID'"]}'
+        -c '{"function": "ReadCampaign", "Args":["'"$CAMPAIGN_ID"'"]}' | jq .
 }
 
 GetAllCampaigns() {
     echo "============= Get all campaigns ============="
-    
+
     setGlobalsForPeer0Org2
 
     peer chaincode query -C $CHANNEL_NAME -n ${CC_NAME} \
-        -c '{"function": "GetAllCampaigns", "Args":[]}'
+        -c '{"function": "GetAllCampaigns", "Args":[]}' | jq .
 }
+
 
 
 
 
 # Run this function if you add any new dependency in chaincode
-presetup
+# presetup
 
-packageChaincode
-installChaincode
-queryInstalledForOrg1
-queryInstalledForOrg2
-approveForMyOrg1
-checkCommitReadyness
-approveForMyOrg2
-checkCommitReadyness
-commitChaincodeDefination
-queryCommitted
+# packageChaincode
+# installChaincode
+# queryInstalledForOrg1
+# queryInstalledForOrg2
+# approveForMyOrg1
+# checkCommitReadyness
+# approveForMyOrg2
+# checkCommitReadyness
+# commitChaincodeDefination
+# queryCommitted
 
-chaincodeInvokeInit
-sleep 3
-CreateCampaign
-sleep 3
-DonateToCampaign
+# chaincodeInvokeInit
+# sleep 3
+# CreateCampaign
+# sleep 3
+# DonateToCampaign
+# sleep 3
 # Withdraw
+# sleep 3
 # CancelCampaign
 
 # sleep 2
 
-# ReadCampaign
+# ReadCampaign 
 # sleep 2
-# GetAllCampaigns
+# GetAllCampaigns 
 

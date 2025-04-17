@@ -3,7 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"time"
+	"log"
 
 	"github.com/hyperledger/fabric-contract-api-go/contractapi"
 )
@@ -39,11 +39,13 @@ type PaymentDetail struct {
 
 // Init initializes the chaincode
 func (s *SmartContract) InitLedger(ctx contractapi.TransactionContextInterface) error {
+	
+	log.Printf("Successfully called InitLedger")
 	return nil
 }
 
 // CreateCampaign adds a new campaign to the ledger
-func (s *SmartContract) CreateCampaign(ctx contractapi.TransactionContextInterface, id, title, description, campaignType string, target, deadline int64, image string) error {
+func (s *SmartContract) CreateCampaign(ctx contractapi.TransactionContextInterface, id, title, description, campaignType string, target, deadline int64, image string,timestamp int64) error {
 	exists, err := s.CampaignExists(ctx, id)
 	if err != nil {
 		return err
@@ -52,8 +54,7 @@ func (s *SmartContract) CreateCampaign(ctx contractapi.TransactionContextInterfa
 		return fmt.Errorf("campaign %s already exists", id)
 	}
 
-	currentTime := time.Now().Unix()
-	if deadline <= currentTime {
+	if deadline <= timestamp {
 		return fmt.Errorf("deadline must be in the future")
 	}
 
@@ -82,6 +83,9 @@ func (s *SmartContract) CreateCampaign(ctx contractapi.TransactionContextInterfa
 	if err != nil {
 		return err
 	}
+
+	
+	log.Printf("Successfully created campaign: %s", id)
 
 	return ctx.GetStub().PutState(id, campaignJSON)
 }
@@ -125,11 +129,14 @@ func (s *SmartContract) DonateToCampaign(ctx contractapi.TransactionContextInter
 		PaymentType: "donation",
 	}
 
+	
+	log.Printf("Successfully donated to campaign: %s", id)
+
 	return s.appendPayment(ctx, donorID, payment)
 }
 
 // Withdraw allows the campaign owner to withdraw funds after deadline
-func (s *SmartContract) Withdraw(ctx contractapi.TransactionContextInterface, id string) error {
+func (s *SmartContract) Withdraw(ctx contractapi.TransactionContextInterface, id string,timestamp int64) error {
 	campaign, err := s.ReadCampaign(ctx, id)
 	if err != nil {
 		return err
@@ -141,7 +148,7 @@ func (s *SmartContract) Withdraw(ctx contractapi.TransactionContextInterface, id
 	if campaign.AmountCollected <= 0 {
 		return fmt.Errorf("no funds to withdraw")
 	}
-	if campaign.Deadline > time.Now().Unix() {
+	if campaign.Deadline > timestamp {
 		return fmt.Errorf("cannot withdraw before deadline")
 	}
 
@@ -168,14 +175,17 @@ func (s *SmartContract) Withdraw(ctx contractapi.TransactionContextInterface, id
 	payment := PaymentDetail{
 		CampaignID:  id,
 		Amount:      campaign.AmountCollected,
-		Timestamp:   time.Now().Unix(),
+		Timestamp:   timestamp,
 		PaymentType: "withdrawal",
 	}
+
+	
+	log.Printf("Successfully withdrawn campaign: %s", id)
 	return s.appendPayment(ctx, clientID, payment)
 }
 
 // CancelCampaign cancels the campaign and refunds donors
-func (s *SmartContract) CancelCampaign(ctx contractapi.TransactionContextInterface, id string) error {
+func (s *SmartContract) CancelCampaign(ctx contractapi.TransactionContextInterface, id string, timestamp int64) error {
 	campaign, err := s.ReadCampaign(ctx, id)
 	if err != nil {
 		return err
@@ -183,7 +193,7 @@ func (s *SmartContract) CancelCampaign(ctx contractapi.TransactionContextInterfa
 	if campaign.Canceled {
 		return fmt.Errorf("campaign is already canceled")
 	}
-	if campaign.Deadline <= time.Now().Unix() {
+	if campaign.Deadline <= timestamp {
 		return fmt.Errorf("cannot cancel after deadline")
 	}
 
@@ -200,7 +210,7 @@ func (s *SmartContract) CancelCampaign(ctx contractapi.TransactionContextInterfa
 		refund := PaymentDetail{
 			CampaignID:  id,
 			Amount:      amount,
-			Timestamp:   time.Now().Unix(),
+			Timestamp:   timestamp,
 			PaymentType: "refund",
 		}
 		err := s.appendPayment(ctx, donor, refund)
@@ -215,7 +225,11 @@ func (s *SmartContract) CancelCampaign(ctx contractapi.TransactionContextInterfa
 		return err
 	}
 
+	
+	log.Printf("Successfully cenceled campaign: %s", id)
+
 	return ctx.GetStub().PutState(id, campaignJSON)
+	
 }
 
 // ReadCampaign returns the campaign stored in the ledger with given ID
@@ -234,6 +248,7 @@ func (s *SmartContract) ReadCampaign(ctx contractapi.TransactionContextInterface
 		return nil, err
 	}
 
+	log.Printf("Successfully read campaign: %s", id)
 	return &campaign, nil
 }
 
@@ -265,13 +280,15 @@ func (s *SmartContract) GetAllCampaigns(ctx contractapi.TransactionContextInterf
 		campaigns = []*Campaign{}
 	}
 
+	
+	log.Printf("Got all campaign : ")
 	return campaigns, nil
 
 }
 
 // appendPayment appends a payment detail to a composite key list
 func (s *SmartContract) appendPayment(ctx contractapi.TransactionContextInterface, user string, payment PaymentDetail) error {
-	paymentKey, err := ctx.GetStub().CreateCompositeKey("payment", []string{user, fmt.Sprint(time.Now().UnixNano())})
+	paymentKey, err := ctx.GetStub().CreateCompositeKey("payment", []string{user, fmt.Sprint(payment.Timestamp)})
 	if err != nil {
 		return err
 	}
@@ -281,6 +298,7 @@ func (s *SmartContract) appendPayment(ctx contractapi.TransactionContextInterfac
 	}
 	return ctx.GetStub().PutState(paymentKey, paymentJSON)
 }
+
 
 // CampaignExists returns true if campaign with given ID exists
 func (s *SmartContract) CampaignExists(ctx contractapi.TransactionContextInterface, id string) (bool, error) {

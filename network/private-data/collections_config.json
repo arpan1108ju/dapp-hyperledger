@@ -1,6 +1,6 @@
 [
      {
-          "name": "collectionCars",
+          "name": "collectionCampaigns",
           "policy": "OR('Org1MSP.member', 'Org2MSP.member')",
           "requiredPeerCount": 0,
           "maxPeerCount": 3,
@@ -9,7 +9,7 @@
           "memberOnlyWrite": true
      },
      {
-          "name": "collectionCarPrivateDetails",
+          "name": "collectionCampaignsPrivateDetails",
           "policy": "OR('Org1MSP.member')",
           "requiredPeerCount": 0,
           "maxPeerCount": 3,

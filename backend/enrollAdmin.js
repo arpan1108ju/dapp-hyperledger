@@ -1,40 +1,47 @@
-const FabricCAServices = require('fabric-ca-client');
-const { Wallets } = require('fabric-network');
-const path = require('path');
-const fs = require('fs');
+import FabricCAServices from 'fabric-ca-client';
+import { Wallets } from 'fabric-network';
+import path from 'path';
+import fs from 'fs';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+import { CONNECTION_PROFILE_PATH } from './paths.js';
+
+// ESM workaround for __dirname
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 async function enrollAdmin() {
     try {
-        // Path to connection profile (connection-org1.json)
-        const ccpPath = path.resolve(__dirname, 'connection-org1.json');
-        const ccp = JSON.parse(fs.readFileSync(ccpPath, 'utf8'));
+        // Load connection profile
+        const ccp = JSON.parse(fs.readFileSync(CONNECTION_PROFILE_PATH, 'utf8'));
 
-        // Retrieve the CA URL from the connection profile
+        // Get CA URL
         const caURL = ccp.certificateAuthorities['ca.org1.example.com'].url;
 
-        // Check if the CA URL is using HTTPS
+        // Check HTTPS
         if (!caURL.startsWith('https://')) {
             console.error('Error: The CA URL must start with https://');
             return;
         }
 
-        // Create a new Fabric CA client for interacting with the CA
+        // Initialize CA client
         const ca = new FabricCAServices(caURL);
 
-        // Setup the wallet to store identities
-        const wallet = await Wallets.newFileSystemWallet(path.join(__dirname, 'wallet'));
+        // Create wallet directory
+        const walletPath = path.join(__dirname, 'wallet');
+        const wallet = await Wallets.newFileSystemWallet(walletPath);
 
-        // Check if the admin identity already exists in the wallet
+        // Check if admin already exists
         const identity = await wallet.get('admin');
         if (identity) {
             console.log('Admin already enrolled');
             return;
         }
 
-        // Enroll the admin user
+        // Enroll admin
         const enrollment = await ca.enroll({ enrollmentID: 'admin', enrollmentSecret: 'adminpw' });
 
-        // Create an X.509 identity and store it in the wallet
+        // Create and store identity
         const x509Identity = {
             credentials: {
                 certificate: enrollment.certificate,
@@ -44,9 +51,9 @@ async function enrollAdmin() {
             type: 'X.509',
         };
         await wallet.put('admin', x509Identity);
-        console.log('Successfully enrolled admin');
+        console.log('✅ Successfully enrolled admin');
     } catch (error) {
-        console.error(`Failed to enroll admin: ${error}`);
+        console.error(`❌ Failed to enroll admin: ${error}`);
     }
 }
 

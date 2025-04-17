@@ -1,1 +1,3 @@
-mkdir crypto-config chaincode-package channel-artifacts
+mkdir crypto-config 
+mkdir chaincode-package 
+mkdir channel-artifacts
