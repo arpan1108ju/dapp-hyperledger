@@ -1,2 +1,2 @@
 Installed chaincodes on peer:
-Package ID: assetTransfer_1:09c9d4d2cde624d89a765a9078824541ef4ef5db72747eef817f92d57fb5f483, Label: assetTransfer_1
+Package ID: fabcar_1:2170a335ea5bae46bdec0007958fe7d246702ae2eda87860539f463d6df1adba, Label: fabcar_1
