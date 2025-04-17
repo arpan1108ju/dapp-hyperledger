@@ -1,2 +1,6 @@
 Installed chaincodes on peer:
+<<<<<<< HEAD
 Package ID: fabcar_1:2170a335ea5bae46bdec0007958fe7d246702ae2eda87860539f463d6df1adba, Label: fabcar_1
+=======
+Package ID: crowdfundingGO_1:2993b46708358cfdac3ae5d12539bfeb2a75db346d15fc5c10871093fc708770, Label: crowdfundingGO_1
+>>>>>>> 890d0baf3202ff0668e57c89567d0d81075a80ba

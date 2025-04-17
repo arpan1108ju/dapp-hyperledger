@@ -33,10 +33,10 @@ setGlobalsForPeer0Org2(){
 createChannel(){
     if [ -f "./channel-artifacts/${CHANNEL_NAME}.block" ]; then
         rm ./channel-artifacts/${CHANNEL_NAME}.block
-        echo "#### removed ./channel-artifacts/${CHANNEL_NAME}.block ####"
+        echo "================= removed ./channel-artifacts/${CHANNEL_NAME}.block ======================="
     fi
 
-    echo "### setting globals for peer0Org1 ... ####"
+    # echo "=============== setting globals for peer0Org1 ================="
     setGlobalsForPeer0Org1
     
 
