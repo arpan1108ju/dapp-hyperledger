@@ -2,12 +2,13 @@
 
 
 import { disconnectFromGateway } from "./gateway/disconnect.js";
+import { getAllCampaigns } from "./methods/query/getAllCampaigns.js";
 import { getCampaign } from "./methods/query/getCampaign.js";
 
 async function query() {
     try {
-        // const result = await getAllCampaigns();
-        const result = await getCampaign({id : "camp1234"});
+        const result = await getAllCampaigns();
+        // const result = await getCampaign({id : "camp1234"});
 
         // await connectToGateway();
         // const contract = await getContract();

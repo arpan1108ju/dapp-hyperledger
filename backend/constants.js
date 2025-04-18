@@ -28,6 +28,7 @@ const GET_ALL_CAMPAIGNS = "GetAllCampaigns";
 const GET_CAMPAIGN = "ReadCampaign";
 const GET_USER_PAYMENTS="GetUserPayments";
 const DELETE_CAMPAIGN="DeleteCampaign";
+const UPDATE_CAMPAIGN = "UpdateCampaign";
 
 export { 
     CAMPAIGN_ID,
@@ -51,5 +52,6 @@ export {
     CHANNEL_NAME,
     CONTRACT_NAME,
     GET_USER_PAYMENTS,
-    DELETE_CAMPAIGN
+    DELETE_CAMPAIGN,
+    UPDATE_CAMPAIGN
 };

@@ -342,5 +342,5 @@ chaincodeInvokeInit
 
 # ReadCampaign 
 # sleep 2
-GetAllCampaigns 
+# GetAllCampaigns 
 

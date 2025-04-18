@@ -17,7 +17,7 @@ import { createCampaign } from "./methods/invoke/createCampaign.js";
 const main = async () => {
   try {
     const result = await createCampaign({
-      id: "12",
+      id: CAMPAIGN_ID,
       title: CAMPAIGN_TITLE,
       description: CAMPAIGN_DESC,
       category: CAMPAIGN_CATEGORY,
@@ -30,7 +30,7 @@ const main = async () => {
       `✅ Transaction has been submitted: ${JSON.parse(result.toString())}`
     );
   } catch (error) {
-    // console.error(`❌ Failed to submit transaction: ${error}`);
+    console.error(`❌ Failed to submit transaction: ${error}`);
   } finally {
     await disconnectFromGateway();
     process.exit(0);

@@ -90,6 +90,65 @@ func (s *SmartContract) CreateCampaign(ctx contractapi.TransactionContextInterfa
 	return ctx.GetStub().PutState(id, campaignJSON)
 }
 
+
+// UpdateCampaign allows campaign owner to update editable fields before deadline and before donations
+func (s *SmartContract) UpdateCampaign(ctx contractapi.TransactionContextInterface, id, title, description, campaignType string, target, deadline int64, image string, timestamp int64) error {
+	campaign, err := s.ReadCampaign(ctx, id)
+	if err != nil {
+		return err
+	}
+
+	if campaign.Canceled {
+		return fmt.Errorf("cannot update a canceled campaign")
+	}
+	if campaign.Withdrawn {
+		return fmt.Errorf("cannot update a withdrawn campaign")
+	}
+	if campaign.Deadline <= timestamp {
+		return fmt.Errorf("cannot update a campaign after deadline")
+	}
+
+	clientID, err := ctx.GetClientIdentity().GetID()
+	if err != nil {
+		return fmt.Errorf("failed to get client identity: %v", err)
+	}
+	if campaign.Owner != clientID {
+		return fmt.Errorf("only campaign owner can update the campaign")
+	}
+
+	if campaign.AmountCollected > 0 {
+		// If funds already collected, restrict update to only title, description and image
+		campaign.Title = title
+		campaign.Description = description
+		campaign.Image = image
+	} else {
+		// Full editable if no donations
+		if deadline <= timestamp {
+			return fmt.Errorf("new deadline must be in the future")
+		}
+		campaign.Title = title
+		campaign.Description = description
+		campaign.CampaignType = campaignType
+		campaign.Target = target
+		campaign.Deadline = deadline
+		campaign.Image = image
+	}
+
+	campaignJSON, err := json.Marshal(campaign)
+	if err != nil {
+		return err
+	}
+
+	err = ctx.GetStub().PutState(id, campaignJSON)
+	if err != nil {
+		return err
+	}
+
+	log.Printf("Successfully updated campaign: %s", id)
+	return nil
+}
+
+
 // DonateToCampaign allows a user to donate to a campaign
 func (s *SmartContract) DonateToCampaign(ctx contractapi.TransactionContextInterface, id string, amount int64,timestamp int64) error {
 	campaign, err := s.ReadCampaign(ctx, id)
