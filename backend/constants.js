@@ -30,7 +30,13 @@ const GET_USER_PAYMENTS="GetUserPayments";
 const DELETE_CAMPAIGN="DeleteCampaign";
 const UPDATE_CAMPAIGN = "UpdateCampaign";
 
+
+const ADMIN = "admin";
+const USER = "appUser";
+
 export { 
+    ADMIN,
+    USER,
     CAMPAIGN_ID,
     CAMPAIGN_TITLE,
     CAMPAIGN_DESC,
