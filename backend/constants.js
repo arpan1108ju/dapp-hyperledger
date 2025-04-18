@@ -30,10 +30,8 @@ const GET_USER_PAYMENTS="GetUserPayments";
 const DELETE_CAMPAIGN="DeleteCampaign";
 const UPDATE_CAMPAIGN = "UpdateCampaign";
 
-
 const ADMIN = "admin";
 const USER = "appUser";
-
 export { 
     ADMIN,
     USER,
