@@ -232,6 +232,40 @@ func (s *SmartContract) CancelCampaign(ctx contractapi.TransactionContextInterfa
 	
 }
 
+// DeleteCampaign deletes a campaign if it exists, is not withdrawn, and belongs to the caller
+func (s *SmartContract) DeleteCampaign(ctx contractapi.TransactionContextInterface, id string) error {
+	campaign, err := s.ReadCampaign(ctx, id)
+	if err != nil {
+		return err
+	}
+
+	clientID, err := ctx.GetClientIdentity().GetID()
+	if err != nil {
+		return fmt.Errorf("failed to get client identity: %v", err)
+	}
+
+	if campaign.Owner != clientID {
+		return fmt.Errorf("only the campaign owner can delete the campaign")
+	}
+
+	if campaign.Withdrawn {
+		return fmt.Errorf("cannot delete a campaign that has already been withdrawn")
+	}
+
+	if campaign.Canceled {
+		return fmt.Errorf("campaign is already canceled; deletion not allowed")
+	}
+
+	err = ctx.GetStub().DelState(id)
+	if err != nil {
+		return fmt.Errorf("failed to delete campaign: %v", err)
+	}
+
+	log.Printf("Successfully deleted campaign: %s", id)
+	return nil
+}
+
+
 // ReadCampaign returns the campaign stored in the ledger with given ID
 func (s *SmartContract) ReadCampaign(ctx contractapi.TransactionContextInterface, id string) (*Campaign, error) {
 	campaignJSON, err := ctx.GetStub().GetState(id)
@@ -286,6 +320,45 @@ func (s *SmartContract) GetAllCampaigns(ctx contractapi.TransactionContextInterf
 
 }
 
+// GetUserPayments retrieves all payment records for the calling user
+func (s *SmartContract) GetUserPayments(ctx contractapi.TransactionContextInterface) ([]*PaymentDetail, error) {
+	userID, err := ctx.GetClientIdentity().GetID()
+	if err != nil {
+		return nil, fmt.Errorf("failed to get client identity: %v", err)
+	}
+
+	iterator, err := ctx.GetStub().GetStateByPartialCompositeKey("payment", []string{userID})
+	if err != nil {
+		return nil, fmt.Errorf("failed to get payment history for user %s: %v", userID, err)
+	}
+	defer iterator.Close()
+
+	var payments []*PaymentDetail
+
+	for iterator.HasNext() {
+		response, err := iterator.Next()
+		if err != nil {
+			return nil, err
+		}
+
+		var payment PaymentDetail
+		err = json.Unmarshal(response.Value, &payment)
+		if err != nil {
+			continue // skip any corrupted record
+		}
+
+		payments = append(payments, &payment)
+	}
+
+	if payments == nil {
+		payments = []*PaymentDetail{}
+	}
+
+	log.Printf("Retrieved %d payments for user: %s", len(payments), userID)
+	return payments, nil
+}
+
+
 // appendPayment appends a payment detail to a composite key list
 func (s *SmartContract) appendPayment(ctx contractapi.TransactionContextInterface, user string, payment PaymentDetail) error {
 	paymentKey, err := ctx.GetStub().CreateCompositeKey("payment", []string{user, fmt.Sprint(payment.Timestamp)})
@@ -298,6 +371,7 @@ func (s *SmartContract) appendPayment(ctx contractapi.TransactionContextInterfac
 	}
 	return ctx.GetStub().PutState(paymentKey, paymentJSON)
 }
+
 
 
 // CampaignExists returns true if campaign with given ID exists
@@ -319,3 +393,4 @@ func main() {
 		panic(fmt.Sprintf("Error starting chaincode: %v", err))
 	}
 }
+

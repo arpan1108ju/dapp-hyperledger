@@ -1,13 +1,28 @@
 // backend/query.js
-const { getContract } = require('./gateway');
+
+
+import { disconnectFromGateway } from "./gateway/disconnect.js";
+import { getCampaign } from "./methods/query/getCampaign.js";
 
 async function query() {
-    const { gateway, contract } = await getContract();
+    try {
+        // const result = await getAllCampaigns();
+        const result = await getCampaign({id : "camp1234"});
 
-    const result = await contract.evaluateTransaction('ReadAsset', '1111');
-    console.log('✅ Query Result:', result.toString());
+        // await connectToGateway();
+        // const contract = await getContract();
+        // const result = await contract.evaluateTransaction(GET_CAMPAIGN,"camp1234");
 
-    await gateway.disconnect();
+
+        console.log('✅ Query Result:', result);
+        
+    } catch (error) {
+        console.error(`❌ Failed to submit transaction: ${error}`);   
+    }
+    finally {
+        await disconnectFromGateway();
+        process.exit(0);
+    }
 }
 
 query();

@@ -228,7 +228,7 @@ DONATION_AMOUNT="500"
 DONATION_TIMESTAMP="1000000010"
 
 WITHDRAW_TIMESTAMP="2000100000"
-CANCEL_TIMESTAMP=  "1000100000"
+CANCEL_TIMESTAMP="1000100000"
 
 # ======================== Functions ============================
 
@@ -315,20 +315,20 @@ GetAllCampaigns() {
 
 
 # Run this function if you add any new dependency in chaincode
-# presetup
+presetup
 
-# packageChaincode
-# installChaincode
-# queryInstalledForOrg1
-# queryInstalledForOrg2
-# approveForMyOrg1
-# checkCommitReadyness
-# approveForMyOrg2
-# checkCommitReadyness
-# commitChaincodeDefination
-# queryCommitted
+packageChaincode
+installChaincode
+queryInstalledForOrg1
+queryInstalledForOrg2
+approveForMyOrg1
+checkCommitReadyness
+approveForMyOrg2
+checkCommitReadyness
+commitChaincodeDefination
+queryCommitted
 
-# chaincodeInvokeInit
+chaincodeInvokeInit
 # sleep 3
 # CreateCampaign
 # sleep 3
@@ -342,5 +342,5 @@ GetAllCampaigns() {
 
 # ReadCampaign 
 # sleep 2
-# GetAllCampaigns 
+GetAllCampaigns 
 

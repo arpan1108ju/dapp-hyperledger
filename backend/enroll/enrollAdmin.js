@@ -1,14 +1,10 @@
 import FabricCAServices from 'fabric-ca-client';
 import { Wallets } from 'fabric-network';
-import path from 'path';
 import fs from 'fs';
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
-import { CONNECTION_PROFILE_PATH } from './paths.js';
 
-// ESM workaround for __dirname
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+import { CONNECTION_PROFILE_PATH , WALLET_PATH } from '../paths.js';
+
+
 
 async function enrollAdmin() {
     try {
@@ -28,8 +24,7 @@ async function enrollAdmin() {
         const ca = new FabricCAServices(caURL);
 
         // Create wallet directory
-        const walletPath = path.join(__dirname, 'wallet');
-        const wallet = await Wallets.newFileSystemWallet(walletPath);
+        const wallet = await Wallets.newFileSystemWallet(WALLET_PATH);
 
         // Check if admin already exists
         const identity = await wallet.get('admin');

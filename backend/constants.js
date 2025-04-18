@@ -2,7 +2,7 @@ const CHANNEL_NAME = "mychannel";
 const CONTRACT_NAME = "crowdfundingGO";
 
 
-const  CAMPAIGN_ID="camp1234"
+const  CAMPAIGN_ID="camp123"
 const  CAMPAIGN_TITLE="Save the Planet"
 const  CAMPAIGN_DESC="Campaign to plant trees"
 const  CAMPAIGN_CATEGORY="Environment"
@@ -26,6 +26,8 @@ const WITHDRAW_CAMPAIGN = "Withdraw";
 const CANCEL_CAMPAIGN = "CancelCampaign";
 const GET_ALL_CAMPAIGNS = "GetAllCampaigns";
 const GET_CAMPAIGN = "ReadCampaign";
+const GET_USER_PAYMENTS="GetUserPayments";
+const DELETE_CAMPAIGN="DeleteCampaign";
 
 export { 
     CAMPAIGN_ID,
@@ -47,5 +49,7 @@ export {
     GET_ALL_CAMPAIGNS,
     GET_CAMPAIGN,
     CHANNEL_NAME,
-    CONTRACT_NAME
+    CONTRACT_NAME,
+    GET_USER_PAYMENTS,
+    DELETE_CAMPAIGN
 };

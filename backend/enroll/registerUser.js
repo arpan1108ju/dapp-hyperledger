@@ -1,13 +1,11 @@
 import FabricCAServices from 'fabric-ca-client';
 import { Wallets } from 'fabric-network';
-import path from 'path';
-import fs from 'fs';
-import { fileURLToPath } from 'url';
-import { CONNECTION_PROFILE_PATH } from './paths.js';
 
-// Get __dirname equivalent in ES modules
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+import fs from 'fs';
+
+import { CONNECTION_PROFILE_PATH , WALLET_PATH } from '../paths.js';
+
+
 
 
 async function registerUser() {
@@ -17,8 +15,7 @@ async function registerUser() {
         const caURL = ccp.certificateAuthorities['ca.org1.example.com'].url;
         const ca = new FabricCAServices(caURL);
 
-        const walletPath = path.join(__dirname, 'wallet');
-        const wallet = await Wallets.newFileSystemWallet(walletPath);
+        const wallet = await Wallets.newFileSystemWallet(WALLET_PATH);
 
         const userExists = await wallet.get('appUser');
         if (userExists) {
